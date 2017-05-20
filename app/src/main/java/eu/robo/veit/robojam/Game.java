@@ -1,5 +1,10 @@
 package eu.robo.veit.robojam;
 
+import eu.robo.veit.robojam.yumiDriver.MRIConnector;
+import eu.robo.veit.robojam.yumiDriver.Rumpelstielzchen;
+import eu.robo.veit.robojam.yumiDriver.Vector3;
+
+
 import java.util.ArrayList;
 
 /**
@@ -18,6 +23,7 @@ public class Game {
     public static boolean movedOriginalPlayerChar = false;
     public static URDriver urDriver;
     private static int arrrsleft = 0;
+    Rumpelstielzchen stielzchen;
 
     public static void initGame(){
 
@@ -28,6 +34,15 @@ public class Game {
         gameObjects.add(currentGoal);
         gameObjects.add(new Entity(GameObject.BARRICADE,3,2));
         gameObjects.add(new Entity(GameObject.BARRICADE,6,4));
+
+        /**
+         * @todo hostname
+         */
+        MRIConnector leftArm=new MRIConnector("localhost", 30004);
+        leftArm.connect();
+        MRIConnector rightArm=new MRIConnector("localhost", 30005);
+        rightArm.connect();
+        Rumpelstielzchen stielzchen=new Rumpelstielzchen(leftArm, rightArm,new Vector3(630, -280, 150));
     }
 
 //    public GameObject[][] field = new GameObject[8][8];
@@ -69,8 +84,21 @@ public class Game {
         }
         switch (phase){
             case 0:
+                //place kater
+                stielzchen.pickUpAt(1,0);
+                stielzchen.placeAt(0,3);
+                //place Shirkan
+                stielzchen.pickUpAt(4,1);
+                stielzchen.placeAt(2,5);
+                //place Scar (location G5 ???)
+                stielzchen.pickUpAt(3,10);
+                stielzchen.placeAt(4,8);
+
                 break;
             case 1:
+                //place fiona at H4
+                stielzchen.pickUpAt(1,10);
+                stielzchen.placeAt(3,8);
                 break;
             case 2:
                 if(wolf.posx>playerChar.posx){
