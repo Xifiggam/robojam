@@ -114,7 +114,7 @@ public class Game {
     }
 
     public static void initNextPhase(){
-        phase++;
+        phase++; //waah
         switch (phase){
             case 0:
                 break;
