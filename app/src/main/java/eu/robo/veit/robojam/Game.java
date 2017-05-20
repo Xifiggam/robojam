@@ -16,9 +16,11 @@ public class Game {
     public static ArrayList<Entity> gameObjects;
     public static int coinCount = 0;
     public static boolean movedOriginalPlayerChar = false;
+    public static URDriver urDriver;
     private static int arrrsleft = 0;
 
     public static void initGame(){
+
         playerChar = new Entity(GameObject.PLAYERCHAR,7,7);
         currentGoal = new Entity(GameObject.GOAL,1,0);
         gameObjects = new ArrayList<>();
@@ -180,7 +182,7 @@ public class Game {
 //    }
 
     public static void getPlayerTurn(String s){
-
+        new URDriver().execute(Integer.parseInt(s.charAt(1)+""));
         if(phase!=1) {
             switch (s.charAt(0)) {
                 case 'A':

@@ -2,6 +2,7 @@ package eu.robo.veit.robojam;
 
 import org.junit.Test;
 
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 /**

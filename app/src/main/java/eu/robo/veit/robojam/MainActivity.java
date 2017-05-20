@@ -6,6 +6,8 @@ import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements GestureOverlayView.OnGesturePerformedListener{
@@ -27,6 +30,10 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Game.initGame();
+//        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.sound_file_1);
+//        mediaPlayer.start();
+        //sound.playShortResource(R.raw.geschafft2);
+        //sound.release();
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
@@ -88,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
         if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
 
             String action = predictions.get(0).name;
-
             Toast.makeText(this, action, Toast.LENGTH_SHORT).show();
 
             Intent myIntent = new Intent(this, GridActivity.class);

@@ -19,6 +19,7 @@ public class GridActivity extends AppCompatActivity {
         public void onClick(View v) {
             Game.getPlayerTurn("" +((Button)v).getText());
             Toast.makeText(context, ((Button)v).getText(), Toast.LENGTH_SHORT).show();
+
         }
     };
 
