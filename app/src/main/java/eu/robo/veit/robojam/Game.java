@@ -253,7 +253,6 @@ public class Game {
 
 
     public static boolean getPlayerTurn(String s){
-        new URDriver().execute(Integer.parseInt(s.charAt(1)+""));
         if(phase!=1) {
             switch (s.charAt(0)) {
                 case 'A':

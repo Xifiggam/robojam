@@ -39,7 +39,7 @@ public class URDriver extends AsyncTask implements Serializable {
 			TimeUnit.MILLISECONDS.sleep(100);
 			send.println("set_digital_out(7,True)");
 			moveJ(send,-89.3, -109.7 , -68.5 , -2.2 , 89.0 , 0.81); //NULLPUNKT (0)
-			TimeUnit.SECONDS.sleep(3);
+			TimeUnit.MILLISECONDS.sleep(1500);
 			moveToPosition(send,pos);
 
 			send.println("set_digital_out(2,False)");

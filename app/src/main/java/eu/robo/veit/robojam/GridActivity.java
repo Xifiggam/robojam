@@ -19,6 +19,7 @@ public class GridActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(Game.getPlayerTurn("" +((Button)v).getText())){
+                new URDriver().execute(Game.phase+1);
                 Intent myIntent = new Intent(context, MainActivity.class);
                 startActivity(myIntent);
             }
