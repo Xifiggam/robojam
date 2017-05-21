@@ -1,8 +1,6 @@
 package eu.robo.veit.robojam.yumiDriver;
 
-import robojam.*;
 
-import javax.swing.text.Position;
 
 
 public class PositionCommand extends Transform implements IRobotMessage

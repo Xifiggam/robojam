@@ -1,6 +1,7 @@
 package eu.robo.veit.robojam;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +18,11 @@ public class GridActivity extends AppCompatActivity {
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Game.getPlayerTurn("" +((Button)v).getText());
+            if(Game.getPlayerTurn("" +((Button)v).getText())){
+                Intent myIntent = new Intent(context, MainActivity.class);
+                startActivity(myIntent);
+            }
+
             Toast.makeText(context, ((Button)v).getText(), Toast.LENGTH_SHORT).show();
 
         }
@@ -25,6 +30,7 @@ public class GridActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Game.initGame();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

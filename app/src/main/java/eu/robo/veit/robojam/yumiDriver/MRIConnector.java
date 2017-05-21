@@ -1,5 +1,7 @@
 package eu.robo.veit.robojam.yumiDriver;
 
+import android.os.AsyncTask;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -7,7 +9,7 @@ import java.net.Socket;
 /**
  * Created by dbe on 20.05.2017.
  */
-public class MRIConnector {
+public class MRIConnector extends AsyncTask {
 
     private String _hostname;
     private int _port;
@@ -19,7 +21,7 @@ public class MRIConnector {
         _port=port;
     }
 
-    public void connect()
+    private void connect()
     {
 
         try {
@@ -39,7 +41,7 @@ public class MRIConnector {
         }
     }
 
-    public void sendCommand(IRobotMessage cmd)
+    private void sendCommand(IRobotMessage cmd)
     {
         byte[] bytes = ProtocolProcessor.Serialize(cmd);
         if(bytes==null)
@@ -59,5 +61,20 @@ public class MRIConnector {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected Object doInBackground(Object[] params) {
+        try {
+            switch ((String)params[0]){
+                case "connect": connect(); break;
+                case "sendCommand": sendCommand((IRobotMessage)params[1]);break;
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

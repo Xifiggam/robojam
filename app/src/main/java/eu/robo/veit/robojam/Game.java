@@ -1,10 +1,14 @@
 package eu.robo.veit.robojam;
 
+import android.content.Context;
+import android.content.Intent;
+
 import eu.robo.veit.robojam.yumiDriver.MRIConnector;
 import eu.robo.veit.robojam.yumiDriver.Rumpelstielzchen;
 import eu.robo.veit.robojam.yumiDriver.Vector3;
 
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 /**
@@ -18,31 +22,56 @@ public class Game {
     public static Entity currentGoal;
     public static Entity cat;
     public static Entity wolf;
+    public static Entity bac1;
+    public static Entity bac2;
+    public static Entity coin1;
+    public static Entity coin2;
+    public static Entity coin3;
+
     public static ArrayList<Entity> gameObjects;
     public static int coinCount = 0;
     public static boolean movedOriginalPlayerChar = false;
     public static URDriver urDriver;
     private static int arrrsleft = 0;
-    Rumpelstielzchen stielzchen;
+    private static Rumpelstielzchen stielzchen;
+    private static boolean initialized = false;
 
     public static void initGame(){
+        if(initialized)
+            return;
+        initialized = true;
+        /**
+         * @todo hostname
+         */
+        MRIConnector leftArm=new MRIConnector("localhost", 30004);
+        //leftArm.connect();
+        //leftArm.execute("connect");
+        MRIConnector rightArm=new MRIConnector("localhost", 30005);
+        //rightArm.connect();
+        //rightArm.execute("connect");
+        stielzchen=new Rumpelstielzchen(leftArm, rightArm,new Vector3(630, -280, 150));
 
         playerChar = new Entity(GameObject.PLAYERCHAR,7,7);
         currentGoal = new Entity(GameObject.GOAL,1,0);
         gameObjects = new ArrayList<>();
         gameObjects.add(playerChar);
         gameObjects.add(currentGoal);
-        gameObjects.add(new Entity(GameObject.BARRICADE,3,2));
-        gameObjects.add(new Entity(GameObject.BARRICADE,6,4));
+        bac1 = new Entity(GameObject.BARRICADE,3,2);
+        bac2 = new Entity(GameObject.BARRICADE,6,4);
+        gameObjects.add(bac1);
+        gameObjects.add(bac2);
+        //place Shirkan
+        stielzchen.pickUpAt(4,1);
+        stielzchen.placeAt(2,5);
+        //place Scar (location G5 ???)
+        stielzchen.pickUpAt(3,10);
+        stielzchen.placeAt(4,8);
 
-        /**
-         * @todo hostname
-         */
-        MRIConnector leftArm=new MRIConnector("localhost", 30004);
-        leftArm.connect();
-        MRIConnector rightArm=new MRIConnector("localhost", 30005);
-        rightArm.connect();
-        Rumpelstielzchen stielzchen=new Rumpelstielzchen(leftArm, rightArm,new Vector3(630, -280, 150));
+        //place kater
+        stielzchen.pickUpAt(1,0);
+        stielzchen.placeAt(0,3);
+
+
     }
 
 //    public GameObject[][] field = new GameObject[8][8];
@@ -53,9 +82,21 @@ public class Game {
 //        field[dst.posx][dst.posy] = tempObject;
 //    }
 
-    public static void update(){
+    public static boolean update(){
         turns++;
-        for (Entity entity : gameObjects) {
+        System.out.println("Coins:" + coinCount);
+        System.out.println("gamObjectsSize:" + gameObjects.size());
+        boolean ret = false;
+
+        for (Entity entity :
+                gameObjects) {
+            System.out.println(entity.type + " " + entity.posx + " " + entity.posy);
+
+        }
+        int x = gameObjects.size();
+        for (int i = 0; i<x && i<gameObjects.size(); i++){
+            Entity entity = gameObjects.get(i);
+            System.out.println(entity.type + " " + entity.posx + " " + entity.posy);
             if(entity.type == GameObject.BARRICADE){
                 if(entity.isAdjacent(playerChar))
                     lostGame();
@@ -63,54 +104,43 @@ public class Game {
             if(entity.type == GameObject.GOAL){
                 if(entity.isAdjacent(playerChar))
                     if(phase!=1) {
-                        goalAchieved();
+                        ret = true;
                     }
                     else {
                         if(entity.isAdjacent(cat) && coinCount >=3)
-                            goalAchieved();
+                            ret= true;
                     }
 
             }
-            if(entity.type == GameObject.COIN){
-                if(entity.isAdjacent(cat))
+            if(phase == 1 && entity.type == GameObject.COIN){
+                if(entity.isAdjacent(cat)){
                     coinCount++;
-                    gameObjects.remove(entity);
-                    switch (coinCount){
-                        case 1: gameObjects.add(new Entity(GameObject.COIN,2,6)); break;
-                        case 2: gameObjects.add(new Entity(GameObject.COIN,4,7)); break;
-                    }
-            }
+                gameObjects.remove(entity);
 
+                switch (coinCount){
+                    case 1:
+                        coin2 = new Entity(GameObject.COIN,2,6);
+                        gameObjects.add(coin2);
+                        // coin 2
+                        stielzchen.pickUpAt(6,1);
+                        stielzchen.placeAt(6,2);
+                        break;
+                    case 2:
+                        coin3 = new Entity(GameObject.COIN,4,7);
+                        gameObjects.add(coin3);
+                        //coin 3
+                        stielzchen.pickUpAt(7,10);
+                        stielzchen.placeAt(7,6);
+                        break;
+
+                }
+                }
+            }
         }
         switch (phase){
             case 0:
-                //place kater
-                stielzchen.pickUpAt(1,0);
-                stielzchen.placeAt(0,3);
-                //place Shirkan
-                stielzchen.pickUpAt(4,1);
-                stielzchen.placeAt(2,5);
-                //place Scar (location G5 ???)
-                stielzchen.pickUpAt(3,10);
-                stielzchen.placeAt(4,8);
-
                 break;
             case 1:
-
-                //coin1
-                stielzchen.pickUpAt(7,0);
-                stielzchen.placeAt(3,3);
-                // coin 2
-                stielzchen.pickUpAt(6,1);
-                stielzchen.placeAt(6,2);
-
-                //coin 3
-                stielzchen.pickUpAt(7,10);
-                stielzchen.placeAt(7,6);
-
-                //place fiona at H4
-                stielzchen.pickUpAt(1,10);
-                stielzchen.placeAt(3,9);
                 break;
             case 2:
                 if(wolf.posx>playerChar.posx){
@@ -146,31 +176,43 @@ public class Game {
                 }
                 break;
         }
-    }
-
-    private static void goalAchieved() {
-
-        //TODO Stub Start Minigame Phase here
-        //Right intent here
-        //remove goal
+        return ret;
     }
 
     public static void initNextPhase(){
+
         phase++; //waah
+        System.out.println("Phase: " + phase + " !!!!!!!!!!!!!");
+
         switch (phase){
             case 0:
                 break;
             case 1:
                 gameObjects.remove(currentGoal);
+                gameObjects.remove(bac1);
+                gameObjects.remove(bac2);
                 currentGoal = new Entity(GameObject.GOAL,7,3);
                 gameObjects.add(currentGoal);
-                gameObjects.add(new Entity(GameObject.COIN,3,3));
-                gameObjects.add(new Entity(GameObject.CAT,1,0));
+                coin1 = new Entity(GameObject.COIN,3,3);
+                gameObjects.add(coin1);
+                //coin1
+                stielzchen.pickUpAt(7,0);
+                stielzchen.placeAt(3,3);
+                cat = new Entity(GameObject.CAT,1,0);
+                gameObjects.add(cat);
+
                 break;
             case 2:
+                //place fiona at H4
+                stielzchen.pickUpAt(1,10);
+                stielzchen.placeAt(3,9);
                 gameObjects.remove(currentGoal);
                 gameObjects.remove(cat);
+                gameObjects.remove(coin1);
+                gameObjects.remove(coin2);
+                gameObjects.remove(coin3);
                 currentGoal = new Entity(GameObject.GOAL,4,7);
+                gameObjects.add(currentGoal);
                 wolf = new Entity(GameObject.WOLF,3,3);
                 gameObjects.add(wolf);
                 break;
@@ -178,6 +220,7 @@ public class Game {
                 gameObjects.remove(currentGoal);
                 gameObjects.remove(wolf);
                 currentGoal = new Entity(GameObject.GOAL,0,4);
+                gameObjects.add(currentGoal);
 
                 if(currentGoal.posx>playerChar.posx){
                     gameObjects.add(new Entity(GameObject.ARRR,playerChar.posx+1, playerChar.posy));
@@ -202,26 +245,14 @@ public class Game {
         //TODO Stub
     }
 
-    private static void getBoardState() {
-        //TODO Stub
-    }
 
 
     public static void placeBarricade(){
         //TODO Stub
     }
 
-//    private class GameField {
-//        public int posx;
-//        public int posy;
-//
-//        public GameField(int posx, int posy) {
-//            this.posx = posx;
-//            this.posy = posy;
-//        }
-//    }
 
-    public static void getPlayerTurn(String s){
+    public static boolean getPlayerTurn(String s){
         new URDriver().execute(Integer.parseInt(s.charAt(1)+""));
         if(phase!=1) {
             switch (s.charAt(0)) {
@@ -391,7 +422,8 @@ public class Game {
         }
 
         System.out.println(playerChar.posx + " " + playerChar.posy);
-        update();
+        return update();
+
     }
 
     private static class Entity {
@@ -406,11 +438,13 @@ public class Game {
         }
 
         public boolean isAdjacent(Entity entity){
+            boolean ret = false;
             if(entity.posx == this.posx && (entity.posy == this.posy+1 || entity.posy == this.posy-1))
-                return true;
+                ret = true;
             else if(entity.posy == this.posy && (entity.posx == this.posx+1 || entity.posx == this.posx-1))
-                return true;
-            return false;
+                ret = true;
+            System.out.println(entity.type +" " + entity.posx +" "+ entity.posy + " - "+ this.type +" " + this.posx +" "+ this.posy + " Return: " + ret);
+            return ret;
         }
     }
 }

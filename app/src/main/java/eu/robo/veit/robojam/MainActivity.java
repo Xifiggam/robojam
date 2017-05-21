@@ -25,11 +25,13 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
 
     private GestureLibrary gLibrary;
 
+    boolean rightGesture = false;
+    boolean secondRightGesture = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Game.initGame();
 //        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.sound_file_1);
 //        mediaPlayer.start();
         //sound.playShortResource(R.raw.geschafft2);
@@ -63,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
 
         gOverlay.addOnGesturePerformedListener(this);
 
+         rightGesture = false;
+         secondRightGesture = false;
+
     }
 
     @Override
@@ -93,12 +98,24 @@ public class MainActivity extends AppCompatActivity implements GestureOverlayVie
                 gLibrary.recognize(gesture);
 
         if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
-
             String action = predictions.get(0).name;
             Toast.makeText(this, action, Toast.LENGTH_SHORT).show();
+            switch (Game.phase){
+                case 0: if(action.equals("circle")) rightGesture = true; break;
+                case 1: if(action.equals("key")) rightGesture = true; break;
+                case 2: if(action.equals("circle")) rightGesture = true; break;
+                case 3: if(action.equals("duel1")) rightGesture = true; if(action.equals("duel2")) secondRightGesture = true; break;
+            }
 
-            Intent myIntent = new Intent(this, GridActivity.class);
-            startActivity(myIntent);
+            if(rightGesture){
+                if(Game.phase == 3 && !secondRightGesture)
+                    return;
+                Game.initNextPhase();
+                Intent myIntent = new Intent(this, GridActivity.class);
+                startActivity(myIntent);
+            }
+
+
         }
     }
 }

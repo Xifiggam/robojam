@@ -1,4 +1,11 @@
-package robojam;
+package eu.robo.veit.robojam.yumiDriver;
+
+import eu.robo.veit.robojam.yumiDriver.GripperCommand;
+import eu.robo.veit.robojam.yumiDriver.GripperState;
+import eu.robo.veit.robojam.yumiDriver.MRIConnector;
+import eu.robo.veit.robojam.yumiDriver.PositionCommand;
+import eu.robo.veit.robojam.yumiDriver.Transform;
+import eu.robo.veit.robojam.yumiDriver.Vector3;
 
 /**
  * Created by dbe on 20.05.2017.
@@ -25,12 +32,12 @@ public class Rumpelstielzchen {
      * @brief picks up an object at the specified location with auto arm select
      */
     public void pickUpAt(int row, int column) {
-
-        try {
-            moveArms(row, column, false, false, false);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//
+//        try {
+//            moveArms(row, column, false, false, false);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -39,12 +46,12 @@ public class Rumpelstielzchen {
      * @brief places an object at the specified location with auto arm select
      */
     public void placeAt(int row, int column) {
-
-        try {
-            moveArms(row, column, true, false, false);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//
+//        try {
+//            moveArms(row, column, true, false, false);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -116,21 +123,25 @@ public class Rumpelstielzchen {
             System.out.println("Making space");
 
             if (moveLeft)
-                _rightArm.sendCommand(new PositionCommand(_rightArmIdle));
+                //_rightArm.sendCommand(new PositionCommand(_rightArmIdle));
+                _rightArm.execute("sendCommand",new PositionCommand(_rightArmIdle));
             else
-                _leftArm.sendCommand(new PositionCommand(_leftArmIdle));
+                _leftArm.execute("sendCommand",new PositionCommand(_leftArmIdle));
+                //_leftArm.sendCommand(new PositionCommand(_leftArmIdle));
 
             calculatePosition(row, column, openGripper, activeArm, moveLeft ? _leftArmIdle.getRotation() : _rightArmIdle.getRotation());
         } else {
             if (forceLeft) {
                 System.out.println("Forcing leftArm");
-                _rightArm.sendCommand(new PositionCommand(_rightArmIdle));
+                //_rightArm.sendCommand(new PositionCommand(_rightArmIdle));
+                _rightArm.execute("sendCommand",new PositionCommand(_rightArmIdle));
                 calculatePosition(row, column, openGripper, _leftArm, _leftArmIdle.getRotation());
                 return;
             }
             if (forceRight) {
                 System.out.println("Forcing right arm");
-                _leftArm.sendCommand(new PositionCommand(_leftArmIdle));
+                _leftArm.execute("sendCommand",new PositionCommand(_leftArmIdle));
+                //_leftArm.sendCommand(new PositionCommand(_leftArmIdle));
                 calculatePosition(row, column, openGripper, _rightArm, _rightArmIdle.getRotation());
                 return;
             }
@@ -147,10 +158,12 @@ public class Rumpelstielzchen {
         System.out.println("Moving to " + target.getX() + "/" + target.getY() + "/" + target.getZ());
         //hover above
         System.out.println("Approaching target position");
-        activeArm.sendCommand(new PositionCommand(target, rotation));
+        activeArm.execute("sendCommand",new PositionCommand(target, rotation));
+        //activeArm.sendCommand(new PositionCommand(target, rotation));
         Thread.sleep(5000);
         if (!openGripper) {
-            activeArm.sendCommand(new GripperCommand(GripperState.OPEN));
+            activeArm.execute("sendCommand",new GripperCommand(GripperState.OPEN));
+            //activeArm.sendCommand(new GripperCommand(GripperState.OPEN));
         }
         //go down
         System.out.println("Going down");
@@ -158,19 +171,22 @@ public class Rumpelstielzchen {
             target.setZ(25);
         else
             target.setZ(30);
-        activeArm.sendCommand(new PositionCommand(target, rotation));
+        activeArm.execute("sendCommand", new PositionCommand(target, rotation));
+        //activeArm.sendCommand(new PositionCommand(target, rotation));
         Thread.sleep(2000);
         //perform grip action
         System.out.println("Grip");
         GripperCommand gripperCommand = new GripperCommand();
         gripperCommand.set_state(openGripper ? GripperState.OPEN : GripperState.CLOSED);
-        activeArm.sendCommand(gripperCommand);
+        activeArm.execute("sendCommand",gripperCommand);
+        //activeArm.sendCommand(gripperCommand);
         //Thread.sleep(2000);
 
         //go up
         System.out.println("Going up");
         target.setZ(150);
-        activeArm.sendCommand(new PositionCommand(target, rotation));
+        activeArm.execute("sendCommand", new PositionCommand(target, rotation));
+        //activeArm.sendCommand(new PositionCommand(target, rotation));
         //Thread.sleep(5000);
     }
 

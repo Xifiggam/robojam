@@ -1,6 +1,6 @@
 package eu.robo.veit.robojam.yumiDriver;
 
-import robojam.*;
+
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
